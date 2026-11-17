@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JS Business Card Scanner | OCR to JSON</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Tesseract.js v5 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Business Card Scanner</h1>
+      <p class="subtitle">100% Client-Side OCR &amp; Structured JSON Extractor</p>
+    </div>
+    <div class="telemetry" id="telemetry">
+      <span class="badge">Latency: <strong id="metric-latency">--</strong></span>
+      <span class="badge">Confidence: <strong id="metric-confidence">--</strong></span>
+      <span class="badge">Saved Cards: <strong id="metric-count">0</strong></span>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- Left Column: Image Input & Raw OCR -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>1. Card Input</h2>
+        <button type="button" id="btn-sample" class="btn btn-secondary">Load Sample Card</button>
+      </div>
+
+      <label class="dropzone" id="dropzone" for="file-input">
+        <input type="file" id="file-input" accept="image/*" capture="environment" hidden />
+        <div id="dropzone-prompt">
+          <p><strong>Click to upload</strong>, drag &amp; drop, or use camera</p>
+          <span>Supports PNG, JPG, WEBP (Runs locally in browser)</span>
+        </div>
+        <img id="card-preview" alt="Business card preview" hidden />
+      </label>
+
+      <div class="progress-wrapper" id="progress-wrapper" hidden>
+        <div class="progress-label">
+          <span id="status-text">Initializing OCR engine...</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+
+      <details class="raw-ocr-box">
+        <summary>View Raw OCR Text</summary>
+        <pre id="raw-text">No text extracted yet.</pre>
+      </details>
+    </section>
+
+    <!-- Right Column: Editable Form & JSON Output -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>2. Extracted Details</h2>
+        <button type="button" id="btn-add-batch" class="btn btn-primary">+ Save to Session List</button>
+      </div>
+
+      <form id="contact-form" class="form-grid">
+        <label>Full Name
+          <input type="text" id="field-name" placeholder="e.g. Alex Chen" />
+        </label>
+        <label>Job Title
+          <input type="text" id="field-title" placeholder="e.g. Senior Product Engineer" />
+        </label>
+        <label>Company
+          <input type="text" id="field-company" placeholder="e.g. Apex Systems Ltd." />
+        </label>
+        <label>Email
+          <input type="email" id="field-email" placeholder="e.g. alex@apexsystems.io" />
+        </label>
+        <label>Phone
+          <input type="text" id="field-phone" placeholder="e.g. +1 (415) 555-0192" />
+        </label>
+        <label>Website
+          <input type="text" id="field-website" placeholder="e.g. https://apexsystems.io" />
+        </label>
+        <label class="full-width">Address / Notes
+          <input type="text" id="field-address" placeholder="e.g. 500 Market St, San Francisco, CA" />
+        </label>
+      </form>
+
+      <div class="json-section">
+        <div class="panel-header">
+          <h3>Live JSON Output (<span id="json-mode-label">Current Card</span>)</h3>
+          <div class="btn-group">
+            <button type="button" id="btn-clear-batch" class="btn btn-ghost">Clear Saved</button>
+            <button type="button" id="btn-copy" class="btn btn-secondary">Copy JSON</button>
+            <button type="button" id="btn-download" class="btn btn-primary">Download .json</button>
+          </div>
+        </div>
+        <pre id="json-preview">{}</pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
